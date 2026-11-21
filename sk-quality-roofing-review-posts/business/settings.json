@@ -1,0 +1,47 @@
+{
+  "business_name": "SK Quality Roofing",
+  "website": "https://www.skqualityroofing.com/",
+  "review_links": [
+    {
+      "name": "Google",
+      "url": "https://www.google.com/maps/place/SK+Quality+Roofing/data=!4m2!3m1!1s0x88d8e007ac8ea451:0xaf4abe57672405c2?hl=en"
+    },
+    {
+      "name": "Yelp",
+      "url": "https://www.yelp.com/biz/sk-quality-roofing-delray-beach?sort_by=date_desc"
+    }
+  ],
+  "only_stars": 5,
+  "template": "auto",
+  "carousel": "long-only",
+  "short_quote_words": 32,
+  "carousel_min_words": 70,
+  "colors": {
+    "dark": "#08386a",
+    "darker": "#052447",
+    "accent": "#f2365f",
+    "accent_light": "#ff7394"
+  },
+  "logo": "logo-on-dark.png",
+  "logo_style": "original",
+  "photos_folder": "photos",
+  "photo_focus": {},
+  "bubble_title": "Client Review",
+  "caption": {
+    "extras": "Free roof estimate: (561) 276-8040",
+    "hashtags": [
+      "#DelrayBeach",
+      "#PalmBeachCounty",
+      "#FloridaRoofing",
+      "#FamilyOwned"
+    ]
+  },
+  "fonts": {
+    "head": "SairaCondensed-Bold.ttf",
+    "head_italic": "SairaCondensed-Bold.ttf",
+    "label": "SairaExtraCondensed-Bold.ttf",
+    "body": "NotoSans[wdth,wght].ttf",
+    "body_bold": "NotoSans[wdth,wght].ttf",
+    "body_light": "NotoSans[wdth,wght].ttf"
+  }
+}
