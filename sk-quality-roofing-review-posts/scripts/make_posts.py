@@ -18,7 +18,10 @@ reviews.json is a list of:
    "edits": [{"from": "REMOVED and REMOVED", "to": "Two reps"}],   # only for names the site blurred (BBB)
    "caption": "post caption",
    "photo": "optional: photo the reviewer posted with the review (path inside the business folder);
-             used as this post's background instead of the rotation"}
+             used as this post's background instead of the rotation. A list of paths works too:
+             on a carousel, slide 1 uses the first photo and slide 2 the second",
+   "avatar": "optional: the reviewer's profile picture (path inside the business folder); shown in a
+              circle on the review card instead of their initial"}
 Output: <business folder>/posts/<date>/ with PNGs, captions.md, approval.csv
 """
 from __future__ import annotations
@@ -332,11 +335,19 @@ def bubble(bg, logo_white, c, r, title):
     d.rounded_rectangle(box, 32, fill=(255, 255, 255, 255))
     d.polygon([(side + 90, box[3] - 1), (side + 186, box[3] - 1), (side + 90, box[3] + 78)], fill=(255, 255, 255, 255))
     ax, ay = side + pad, box_top + 56
-    d.ellipse((ax, ay, ax + 84, ay + 84), fill=rgb(c["dark"]))
     name = r.get("name") or r["_fallback"]
-    ini, inf = name.strip()[0].upper(), sans(40, "SemiBold")
-    l, t, rr, b = d.textbbox((0, 0), ini, font=inf)  # center the letter's ink, not the font's line box
-    d.text((ax + 42 - (l + rr) / 2, ay + 42 - (t + b) / 2), ini, font=inf, fill=rgb(c["accent_light"]))
+    av = r.get("_avatar")
+    if av is not None and av.is_file():  # the reviewer's own profile picture, cropped to a circle
+        pic = ImageOps.fit(ImageOps.exif_transpose(Image.open(av)).convert("RGBA"), (336, 336), Image.LANCZOS)
+        mask = Image.new("L", (336, 336), 0)
+        ImageDraw.Draw(mask).ellipse((0, 0, 335, 335), fill=255)
+        pic.putalpha(mask)
+        img.alpha_composite(pic.resize((84, 84), Image.LANCZOS), (ax, ay))
+    else:
+        d.ellipse((ax, ay, ax + 84, ay + 84), fill=rgb(c["dark"]))
+        ini, inf = name.strip()[0].upper(), sans(40, "SemiBold")
+        l, t, rr, b = d.textbbox((0, 0), ini, font=inf)  # center the letter's ink, not the font's line box
+        d.text((ax + 42 - (l + rr) / 2, ay + 42 - (t + b) / 2), ini, font=inf, fill=rgb(c["accent_light"]))
     nx = ax + 84 + 24
     d.text((nx, ay + 2), name, font=sans(30, "SemiBold"), fill=(29, 39, 51, 255))
     sw = stars(d, nx, ay + 46, 30, rgb(c["accent"]), 5)
@@ -478,9 +489,16 @@ def main():
         r["_fallback"] = f"{brand} customer" if brand else "Happy customer"
         r["_srcline"] = "Posted on " + r.get("source", "Google")  # date stays in the approval sheet, not on the image
         n += 1
-        own = folder / r["photo"] if r.get("photo") else None
-        if own and own.is_file():  # the reviewer's own photo of the job beats any stock rotation
-            bg = cover(own, r.get("photo_focus", "50% 50%"))
+        r["_avatar"] = folder / r["avatar"] if r.get("avatar") else None
+        own = [folder / x for x in ([r["photo"]] if isinstance(r.get("photo"), str) else r.get("photo") or [])]
+        own = [x for x in own if x.is_file()]
+        for x in ([r["photo"]] if isinstance(r.get("photo"), str) else r.get("photo") or []):
+            if not (folder / x).is_file():
+                print(f"NOTE: photo '{x}' for {r.get('name')} not found, using the rotation.")
+        bg2 = None
+        if own:  # the reviewer's own photos of the job beat any stock rotation
+            bg = cover(own[0], r.get("photo_focus", "50% 50%"))
+            bg2 = cover(own[1], r.get("photo_focus", "50% 50%")) if len(own) > 1 else None
         elif photos:
             p = photos[rot % len(photos)]
             bg = cover(p, focus.get(p.name, "50% 50%"))
@@ -495,7 +513,7 @@ def main():
             teaser = r.get("excerpt") or first_sentences(r["quote"], short)
             slides.append(hero(bg, logo_white, c, {**r, "quote": teaser, "hl": r.get("hl", "") if r.get("hl", "") in teaser else ""},
                                cfg.get("swipe_text", "")))
-            slides.append(bubble(bg, logo_white, c, r, cfg.get("bubble_title", "Client Review")))
+            slides.append(bubble(bg2 or bg, logo_white, c, r, cfg.get("bubble_title", "Client Review")))
         else:
             pick = template if template != "auto" else ("hero" if words(shown) <= short else "bubble")
             rr = {**r, "quote": shown}

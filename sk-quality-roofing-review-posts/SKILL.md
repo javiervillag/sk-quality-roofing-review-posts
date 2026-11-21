@@ -32,7 +32,7 @@ Rules:
 - **5-star only.** Skip 4-star and lower.
 - **Skip reviews with no real content**: a few words only, a review written before the job ("haven't had my appointment yet"), or text that is really SK's own reply.
 - **Same review in two places:** the same customer sometimes posts on Google and Yelp. Make **one** post, from the Google copy.
-- **Photos with reviews:** if the reviewer attached a photo of the work, download the largest version into `photos/from-reviews/` and set `"photo"` on that review. It becomes that post's background. Don't use it if it has text, labels, a watermark or a house number on it (before/after collages usually do); then use the normal rotation and say so in the hand-over.
+- **Customer photos and profile pictures:** reviews with photos make the best posts, so look for them on purpose, including older 5-star reviews with photos that aren't in `seen.json` yet. When a reviewer attached a photo that works as a background (the finished roof, the house, the crew; sharp; no text, labels or watermark), save it in `photos/from-reviews/` and set `"photo"` on that review: it becomes that post's background, and only that post's. Crop a before/after collage down to the "after" panel. If no photo works, leave `photo` out and the post uses the normal rotation. Save a real profile picture to `photos/avatars/` and set `"avatar"`; skip Google's default one-letter icons. The details are in `reference/find-reviews.md` ("Customer photos and profile pictures"). In the hand-over, say which posts use the customer's own photo.
 - Reviews already in `seen.json` are skipped automatically. Say how many were new.
 
 ## 2. Write `reviews.json` (you do this; the person never sees it)
